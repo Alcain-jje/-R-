@@ -1,0 +1,43 @@
+install.packages("rvest")
+
+library(rvest)
+
+html.airports <- read_html("https://en.wikipedia.org/wiki/List_of_busiest_airports_by_passenger_traffic")
+
+df <- html_table(html_nodes(html.airports, "table")[[1]], fill = TRUE) 
+
+head(df)
+
+head(df[2])
+
+colnames(df)
+
+colnames(df)[6] <- "total"
+
+df$total
+df$total <- gsub('\\[[0-9]+\\]', '', df$total)
+df$total <- gsub(',', '', df$total)
+df$total <- as.numeric(df$total)
+summary(df$total)
+
+library(ggplot2)
+
+install.packages("ggmap")
+
+
+
+install.packages('devtools')
+library('devtools')
+install_github('dkahle/ggmap')
+library('ggmap')
+
+devtools::install_github('dkahle/ggmap')
+
+register_google()
+
+gc <- geocode(df$Airport)
+df <- cbind(df, gc)
+
+world <- map_data("world")
+
+ggplot(df, aes(x=lon, y=lat)) + geom_polygon(data=world, aes(x=long, y=lat, group=group), fill="grey75", color="grey70") + geom_point(color="dark red", alpha=.25, aes(size=total)) + geom_point(color="dark red", alpha=.75, shape=1, aes(size=total)) + theme(legend.position='none')
