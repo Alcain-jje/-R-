@@ -33,7 +33,7 @@ library('ggmap')
 
 devtools::install_github('dkahle/ggmap')
 
-register_google()
+//register_google() 
 
 gc <- geocode(df$Airport)
 df <- cbind(df, gc)
